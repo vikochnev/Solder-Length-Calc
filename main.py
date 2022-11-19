@@ -1,6 +1,6 @@
 from tkinter import *
+import math
 
-PI = 3.1415926535897932384626433832795
 SWIRL = 11
 
 
@@ -174,7 +174,7 @@ class Application(Frame):
                 self.print_to_box('Ошибка: Значения всех параметров должны быть больше нуля')
             else:
                 # Формула: pi*(diam+wire_thickness)
-                self.print_results = round(PI * (self.diam + self.thickness) + self.swirl, 1)
+                self.print_results = round(math.pi * (self.diam + self.thickness) + self.swirl, 1)
                 self.results_message(self.print_results)
         elif self.seam_shape.get() == 'rectangular':
             # Проверка, что все параметры положительны
@@ -188,7 +188,7 @@ class Application(Frame):
                 self.print_results = round(
                     2 * (self.rect_length - 2 * self.r_rad) \
                     + 2 * (self.rect_width - 2 * self.r_rad) + \
-                    2 * PI * (self.r_rad + 0.5 * self.thickness) + \
+                    2 * math.pi * (self.r_rad + 0.5 * self.thickness) + \
                     self.swirl,
                     1)
                 # Проверяет, если радиус скругления меньше толщины проволоки,
