@@ -121,10 +121,11 @@ class Application(Frame):
     def results_message(self, sol_length, if_warning = False):
         """"Обрабатывает рассчитанный результат и выводит его в окне результатов"""
         if if_warning == False:
-            message = 'Длина проволоки: ' + str(sol_length) + '\nДопуск длины: ' + str(self.solder_var(sol_length))
+            message = f'Длина проволоки: {str(sol_length)}\nДопуск длины: {str(self.solder_var(sol_length))}'
         else:
-            message = 'Предупреждение: Радиус скругления меньше толщины проволоки!\n' \
-                      'Длина проволоки: ' + str(sol_length) + "\nДопуск длины: " + str(self.solder_var(sol_length))
+            message = f'Предупреждение: Радиус скругления меньше толщины проволоки! \
+            \nДлина проволоки: {str(sol_length)} \
+            \nДопуск длины: {str(self.solder_var(sol_length))}'
         self.print_to_box(message)
 
     def prepare_to_calc(self):
