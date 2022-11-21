@@ -1,7 +1,7 @@
 from tkinter import *
-import math
+import biz_logic
 
-SWIRL = 11
+
 
 
 class Application(Frame):
@@ -59,7 +59,7 @@ class Application(Frame):
         self.ask_rect_r_radius = Entry(self)
 
         # Кнопка для расчёта результатов
-        self.bttn_calcultate = Button(self, text='Рассчитать', command=self.prepare_to_calc)
+        self.bttn_calcultate = Button(self, text='Рассчитать', command=self.calculate())
         self.bttn_calcultate.grid(row=9, column=0, sticky=W)
 
         # Окно с результатами
@@ -102,102 +102,26 @@ class Application(Frame):
         self.results_text.delete(0.0, END)
         self.results_text.insert(0.0, text)
 
-    def solder_var(self, sol_length):
-        """Задаёт допуска по ЕСКД в зависимости от длины проволоки"""
-        if sol_length >= 400: return -1.55
-        elif sol_length >= 315: return -1.4
-        elif sol_length >= 250: return -1.3
-        elif sol_length >= 180: return -1.15
-        elif sol_length >= 120: return -1
-        elif sol_length >= 80: return -0.87
-        elif sol_length >= 50: return -0.74
-        elif sol_length >= 30: return -0.62
-        elif sol_length >= 18: return -0.52
-        elif sol_length >= 10: return -0.43
-        elif sol_length >= 6: return -0.36
-        elif sol_length >= 3: return -0.3
-        else: return -0.25
-
-    def results_message(self, sol_length, if_warning = False):
-        """"Обрабатывает рассчитанный результат и выводит его в окне результатов"""
-        if if_warning == False:
-            message = f'Длина проволоки: {str(sol_length)}\nДопуск длины: {str(self.solder_var(sol_length))}'
-        else:
-            message = f'Предупреждение: Радиус скругления меньше толщины проволоки! \
-            \nДлина проволоки: {str(sol_length)} \
-            \nДопуск длины: {str(self.solder_var(sol_length))}'
-        self.print_to_box(message)
-
-    def prepare_to_calc(self):
-        """Обработка введенных пользователем значений, запуск функции расчёта длины"""
-
-        # Обработка ошибки выбора формы спая
-        if self.seam_shape.get() not in ('circular', 'rectangular'):
-            self.print_to_box('Ошибка: Выберите форму спая')
-        else:
-            # Конвертация значений в числа, обработка ошибки корректного ввода
-            try:
-                # Обнуление значений для корректной обработки ошибок ввода
-                self.diam = ''
-                self.rect_length = ''
-                self.rect_width = ''
-                self.r_rad = ''
-                self.thickness = ''
-
-                # Получение параметров для круглого спая
-                if self.seam_shape.get() == 'circular':
-                    self.diam = float(self.ask_circ_diam.get())
-                # Получение параметров для прямоугольного спая
-                elif self.seam_shape.get() == 'rectangular':
-                    self.rect_length = float(self.ask_rect_length.get())
-                    self.rect_width = float(self.ask_rect_width.get())
-                    self.r_rad = float(self.ask_rect_r_radius.get())
-                # Получение толщины проволоки припоя
-                self.thickness = float(self.ask_thickness.get())
-
-                # Проверка на закрутку
-                if self.check_swirl.get() == True:
-                    self.swirl = SWIRL
-                else:
-                    self.swirl = 0
-
-                # Запуск расчёта в случае отсутствия ошибок
-                self.calculate()
-
-            except:
-                self.print_to_box('Ошибка: Введите все значения как числа')
 
     def calculate(self):
-        """Функция расчёта и вывода на экран длины припоя"""
-        if self.seam_shape.get() == 'circular':
-            # Проверка, что все параметры положительны
-            if self.diam <= 0:
-                self.print_to_box('Ошибка: Значения всех параметров должны быть больше нуля')
-            else:
-                # Формула: pi*(diam+wire_thickness)
-                self.print_results = round(math.pi * (self.diam + self.thickness) + self.swirl, 1)
-                self.results_message(self.print_results)
+        if self.seam_shape.get() not in ('circular', 'rectangular'):
+            self.print_to_box('Ошибка: Выберите форму спая')
+        elif self.seam_shape.get() == 'circular':
+            output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), if_swirl=self.check_swirl,
+                                      seam_shape='circular', diam=self.ask_circ_diam.get())
+            self.print_to_box(str(output))
         elif self.seam_shape.get() == 'rectangular':
-            # Проверка, что все параметры положительны
-            if min(self.rect_length, self.rect_width, self.r_rad) <= 0:
-                self.print_to_box('Ошибка: Значения всех параметров должны быть больше нуля')
-            # Проверка на случай, если радиус скругления больше половины любой из сторон
-            elif min(self.rect_length, self.rect_width) < 2 * self.r_rad:
-                self.print_to_box('Ошибка: Радиус скругления не может быть больше половины любой из сторон')
-            else:
-                # Формула: 2(a-2*r_rad) + 2(b-2*r_rad) + 2*pi*(r_rad + wire_thickness/2)
-                self.print_results = round(
-                    2 * (self.rect_length - 2 * self.r_rad) \
-                    + 2 * (self.rect_width - 2 * self.r_rad) + \
-                    2 * math.pi * (self.r_rad + 0.5 * self.thickness) + \
-                    self.swirl,
-                    1)
-                # Проверяет, если радиус скругления меньше толщины проволоки,
-                # чтобы выдать предупреждение о плохой конструкции места спая
-                if self.r_rad < self.thickness:
-                    self.results_message(self.print_results, if_warning=True)
-                else:
-                    self.results_message(self.print_results)
+            output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), seam_shape='rectangular',
+                                      rect_length=self.ask_rect_length.get(), rect_width=self.ask_rect_width.get())
+            self.print_to_box(str(output))
+        else:
+            self.print_to_box('Ошибка: неожиданная ошибка')
+
+
+
+
+
+
 
 
 app = Application()
