@@ -65,6 +65,7 @@ class Application(Frame):
         # Окно с результатами
         self.results_text = Text(self, width=50, height=10, wrap=WORD)
         self.results_text.grid(row=10, column=0, columnspan=4)
+        self.results_text.insert(0.0, 'test')
 
     def update_menu(self):
         """Обновление интерфейса в зависимости от выбранной формы спая"""
@@ -98,26 +99,25 @@ class Application(Frame):
         self.ask_rect_r_radius.grid_forget()
 
     def print_to_box(self, text):
-        """Выводит текст в окне результатов"""
-        pass
+        """Prints text in results window"""
         self.results_text.delete(0.0, END)
         self.results_text.insert(0.0, text)
 
 
     def calculate(self):
-        if self.seam_shape.get() not in ('circular', 'rectangular'):
-            self.print_to_box('Ошибка: Выберите форму спая')
-        elif self.seam_shape.get() == 'circular':
-            output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), if_swirl=self.check_swirl,
-                                      seam_shape='circular', diam=self.ask_circ_diam.get())
-            # self.print_to_box(str(output))
-        elif self.seam_shape.get() == 'rectangular':
-            output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), seam_shape='rectangular',
-                                      rect_length=self.ask_rect_length.get(), rect_width=self.ask_rect_width.get())
-            # self.print_to_box(str(output))
-        else:
-            pass
-            # self.print_to_box('Ошибка: неожиданная ошибка')
+        pass
+        # if self.seam_shape.get() not in ('circular', 'rectangular'):
+        #     self.print_to_box('Ошибка: Выберите форму спая')
+        # elif self.seam_shape.get() == 'circular':
+        #     output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), if_swirl=self.check_swirl,
+        #                               seam_shape='circular', diam=self.ask_circ_diam.get())
+        #     self.print_to_box(str(output))
+        # elif self.seam_shape.get() == 'rectangular':
+        #     output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), seam_shape='rectangular',
+        #                               rect_length=self.ask_rect_length.get(), rect_width=self.ask_rect_width.get())
+        #     self.print_to_box(str(output))
+        # else:
+        #     self.print_to_box('Ошибка: неожиданная ошибка')
 
 
 
