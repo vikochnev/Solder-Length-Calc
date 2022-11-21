@@ -99,6 +99,7 @@ class Application(Frame):
 
     def print_to_box(self, text):
         """Выводит текст в окне результатов"""
+        pass
         self.results_text.delete(0.0, END)
         self.results_text.insert(0.0, text)
 
@@ -109,13 +110,14 @@ class Application(Frame):
         elif self.seam_shape.get() == 'circular':
             output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), if_swirl=self.check_swirl,
                                       seam_shape='circular', diam=self.ask_circ_diam.get())
-            self.print_to_box(str(output))
+            # self.print_to_box(str(output))
         elif self.seam_shape.get() == 'rectangular':
             output = biz_logic.prepare_to_calc(thickness=self.ask_thickness.get(), seam_shape='rectangular',
                                       rect_length=self.ask_rect_length.get(), rect_width=self.ask_rect_width.get())
-            self.print_to_box(str(output))
+            # self.print_to_box(str(output))
         else:
-            self.print_to_box('Ошибка: неожиданная ошибка')
+            pass
+            # self.print_to_box('Ошибка: неожиданная ошибка')
 
 
 
