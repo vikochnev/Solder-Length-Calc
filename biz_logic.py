@@ -1,107 +1,91 @@
 import math
+import constants
 
-SWIRL = 11
 
+def calculations(thickness, if_swirl, seam_shape, diam, rect_length, rect_width, curvature_radius):
+    """Takes parameters, organizes calculation logic"""
 
-def solder_var(sol_length):
-    """Задаёт допуска по ЕСКД в зависимости от длины проволоки"""
-    if sol_length >= 400:
-        return -1.55
-    elif sol_length >= 315:
-        return -1.4
-    elif sol_length >= 250:
-        return -1.3
-    elif sol_length >= 180:
-        return -1.15
-    elif sol_length >= 120:
-        return -1
-    elif sol_length >= 80:
-        return -0.87
-    elif sol_length >= 50:
-        return -0.74
-    elif sol_length >= 30:
-        return -0.62
-    elif sol_length >= 18:
-        return -0.52
-    elif sol_length >= 10:
-        return -0.43
-    elif sol_length >= 6:
-        return -0.36
-    elif sol_length >= 3:
-        return -0.3
+    # Checks for swirl
+    if if_swirl:
+        swirl = constants.SWIRL
     else:
-        return -0.25
+        swirl = 0
 
+    # Checks if seam shape is picked
+    if seam_shape not in ('circular', 'rectangular'):
+        return 'Ошибка: Выберите форму спая'
 
-def prepare_to_calc(thickness, if_swirl, seam_shape, diam, rect_length, rect_width, r_rad):
-    """Обработка введенных пользователем значений, запуск функции расчёта длины"""
-
-    # Конвертация значений в числа, обработка ошибки корректного ввода
+    # Checks if all parameters in input boxes are numbers, calls calculation functions depending on seam shape
     try:
-        # # Обнуление значений для корректной обработки ошибок ввода
-        #     diam = ''
-        #         rect_length = ''
-        #         rect_width = ''
-        #         r_rad = ''
-        #         thickness = ''
-
-        # Проверка на закрутку
-        if if_swirl == True:
-            swirl = SWIRL
-        else:
-            swirl = 0
-
-        # Получение параметров для круглого спая
         if seam_shape == 'circular':
-            calculate(thickness=float(thickness), swirl=swirl, seam_shape=seam_shape, diam=float(diam))
-        # Получение параметров для прямоугольного спая
-        elif seam_shape.get() == 'rectangular':
-            calculate(thickness=float(thickness), swirl=swirl, seam_shape=seam_shape, rect_length=float(rect_length),
-                      rect_width=float(rect_width), r_rad=float(r_rad))
+            message = calculate_circular(thickness=float(thickness),
+                               swirl=float(swirl),
+                               diam=float(diam))
+            return message
 
+        elif seam_shape == 'rectangular':
+            message = calculate_rectangular(thickness=float(thickness),
+                                  swirl=float(swirl),
+                                  rect_length=float(rect_length),
+                                  rect_width=float(rect_width),
+                                  curvature_radius=float(curvature_radius))
+            return message
+
+        else:
+            return 'Ошибка: неожиданная ошибка'
     except:
         return 'Ошибка: Введите все значения как числа'
 
 
-def calculate(thickness, swirl, seam_shape, diam, rect_length, rect_width, r_rad):
-    """Функция расчёта и вывода на экран длины припоя"""
-    if seam_shape.get() == 'circular':
-        # Проверка, что все параметры положительны
-        if diam <= 0:
-            return 'Ошибка: Значения всех параметров должны быть больше нуля'
+def calculate_circular(thickness, swirl, diam):
+    """Calculates wire length for circular seam shape"""
+
+    # Checks if all parameters are positive
+    if min(thickness, diam) <= 0:
+        return 'Ошибка: Значения всех параметров должны быть больше нуля'
+
+    # returns calculation results
+    else:
+        # Формула: pi*(diam+wire_thickness)
+        results = round(math.pi * (diam + thickness) + swirl, 1)
+        return results_message(results)
+
+
+def calculate_rectangular(thickness, swirl, rect_length, rect_width, curvature_radius):
+    """Calculates wire length for rectangular seam shape"""
+
+    # Checks if all parameters are positive
+    if min(thickness, rect_length, rect_width, curvature_radius) <= 0:
+        return 'Ошибка: Значения всех параметров должны быть больше нуля'
+
+    # Checks if curvature radius is greater than any of rectangle sides
+    elif min(rect_length, rect_width) < 2 * curvature_radius:
+        return 'Ошибка: Радиус скругления не может быть больше половины любой из сторон'
+
+    # Calculates wire length
+    else:
+        # Формула: 2(a-2*curvative_radius) + 2(b-2*curvative_radius) + 2*pi*(r_rad + wire_thickness/2)
+        results = round(2 * (rect_length - 2 * curvature_radius) +
+                        2 * (rect_width - 2 * curvature_radius) +
+                        2 * math.pi * (curvature_radius + 0.5 * thickness) +
+                        swirl)
+
+        # Checks if curvature_radius is less than wire thickness, adds warning to results
+        if curvature_radius < thickness:
+            return results_message(results, if_warning=True)
+
+        # returns calculation results
         else:
-            # Формула: pi*(diam+wire_thickness)
-            print_results = round(math.pi * (diam + thickness) + swirl, 1)
-            results_message(print_results)
-    elif seam_shape.get() == 'rectangular':
-        # Проверка, что все параметры положительны
-        if min(rect_length, rect_width, r_rad) <= 0:
-            return 'Ошибка: Значения всех параметров должны быть больше нуля'
-        # Проверка на случай, если радиус скругления больше половины любой из сторон
-        elif min(rect_length, rect_width) < 2 * r_rad:
-            return 'Ошибка: Радиус скругления не может быть больше половины любой из сторон'
-        else:
-            # Формула: 2(a-2*r_rad) + 2(b-2*r_rad) + 2*pi*(r_rad + wire_thickness/2)
-            print_results = round(
-                2 * (rect_length - 2 * r_rad) \
-                + 2 * (rect_width - 2 * r_rad) + \
-                2 * math.pi * (r_rad + 0.5 * thickness) + \
-                swirl,
-                1)
-            # Проверяет, если радиус скругления меньше толщины проволоки,
-            # чтобы выдать предупреждение о плохой конструкции места спая
-            if r_rad < thickness:
-                results_message(print_results, if_warning=True)
-            else:
-                results_message(print_results)
+            return results_message(results)
 
 
 def results_message(sol_length, if_warning=False):
     """"Обрабатывает рассчитанный результат и выводит его в окне результатов"""
     if if_warning == False:
-        message = f'Длина проволоки: {str(sol_length)}\nДопуск длины: {str(solder_var(sol_length))}'
+        message = f'Длина проволоки: {str(sol_length)}\nДопуск длины: {str(constants.solder_var(sol_length))}'
     else:
         message = f'Предупреждение: Радиус скругления меньше толщины проволоки! \
         \nДлина проволоки: {str(sol_length)} \
-        \nДопуск длины: {str(solder_var(sol_length))}'
-    return (message)
+        \nДопуск длины: {str(constants.solder_var(sol_length))}'
+    return message
+
