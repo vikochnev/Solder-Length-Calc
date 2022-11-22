@@ -19,16 +19,16 @@ def calculations(thickness, if_swirl, seam_shape, diam, rect_length, rect_width,
     try:
         if seam_shape == 'circular':
             message = calculate_circular(thickness=float(thickness),
-                               swirl=float(swirl),
-                               diam=float(diam))
+                                         swirl=float(swirl),
+                                         diam=float(diam))
             return message
 
         elif seam_shape == 'rectangular':
             message = calculate_rectangular(thickness=float(thickness),
-                                  swirl=float(swirl),
-                                  rect_length=float(rect_length),
-                                  rect_width=float(rect_width),
-                                  curvature_radius=float(curvature_radius))
+                                            swirl=float(swirl),
+                                            rect_length=float(rect_length),
+                                            rect_width=float(rect_width),
+                                            curvature_radius=float(curvature_radius))
             return message
 
         else:
@@ -80,7 +80,7 @@ def calculate_rectangular(thickness, swirl, rect_length, rect_width, curvature_r
 
 
 def results_message(sol_length, if_warning=False):
-    """"Обрабатывает рассчитанный результат и выводит его в окне результатов"""
+    """"Formats results message"""
     if if_warning == False:
         message = f'Длина проволоки: {str(sol_length)}\nДопуск длины: {str(constants.solder_var(sol_length))}'
     else:
@@ -88,4 +88,3 @@ def results_message(sol_length, if_warning=False):
         \nДлина проволоки: {str(sol_length)} \
         \nДопуск длины: {str(constants.solder_var(sol_length))}'
     return message
-

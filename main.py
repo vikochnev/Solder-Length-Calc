@@ -76,6 +76,7 @@ class Application(Frame):
             self.lbl_circ_ask_diam.grid(row=5, column=0, sticky=W)
             self.ask_circ_diam.grid(row=5, column=1, sticky=W)
             self.lbl_empty.grid(row=6, rowspan=2, column=0, sticky=W)
+
         # Creates widgets for rectangular seam shape
         elif self.seam_shape.get() == 'rectangular':
             self.lbl_rect_ask_length.grid(row=5, column=0, sticky=W)
@@ -113,5 +114,6 @@ class Application(Frame):
                                          rect_width=self.ask_rect_width.get(),
                                          curvature_radius=self.ask_rect_curvature_radius.get())
         self.print_to_box(message)
+
 
 app = Application()

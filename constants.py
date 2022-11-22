@@ -1,7 +1,9 @@
+# swirl length
 SWIRL = 11
 
+
 def solder_var(sol_length):
-    """Задаёт допуска по ЕСКД в зависимости от длины проволоки"""
+    """Length tolerance parameters"""
     if sol_length >= 400:
         return -1.55
     elif sol_length >= 315:
