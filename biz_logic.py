@@ -68,7 +68,8 @@ def calculate_rectangular(thickness, swirl, rect_length, rect_width, curvature_r
         results = round(2 * (rect_length - 2 * curvature_radius) +
                         2 * (rect_width - 2 * curvature_radius) +
                         2 * math.pi * (curvature_radius + 0.5 * thickness) +
-                        swirl)
+                        swirl
+                        , 1)
 
         # Checks if curvature_radius is less than wire thickness, adds warning to results
         if curvature_radius < thickness:
@@ -78,13 +79,25 @@ def calculate_rectangular(thickness, swirl, rect_length, rect_width, curvature_r
         else:
             return results_message(results)
 
+def check_tolerance(sol_length):
+    with open("tolerance") as f:
+        lines = f.readlines()
+    f.close()
+    tolerance = []
+    for line in lines:
+        tolerance.append(line.strip('\n').split(', '))
+
+    for entry in tolerance:
+        if sol_length > float(entry[0]):
+            return str(entry[1])
+
 
 def results_message(sol_length, if_warning=False):
     """"Formats results message"""
     if if_warning == False:
-        message = f'Длина проволоки: {str(sol_length)}\nДопуск длины: {str(constants.solder_var(sol_length))}'
+        message = f'Длина проволоки: {str(sol_length)}\nДопуск длины: {check_tolerance(sol_length)}'
     else:
         message = f'Предупреждение: Радиус скругления меньше толщины проволоки! \
         \nДлина проволоки: {str(sol_length)} \
-        \nДопуск длины: {str(constants.solder_var(sol_length))}'
+        \nДопуск длины: {check_tolerance(sol_length)}'
     return message
